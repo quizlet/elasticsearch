@@ -167,11 +167,7 @@ class Client extends \ElasticSearch\tests\Base
      * @expectedException ElasticSearch\Transport\HTTPException
      */
     public function testSearchThrowExceptionWhenServerDown() {
-        $client = \ElasticSearch\Client::connection(array(
-            'servers' => array(
-                '127.0.0.1:9300'
-            )
-        ));
+        $client = \ElasticSearch\Client::connection();
 
         $this->assert->exception(function()use($client) {
                 $client->search("title:cool");

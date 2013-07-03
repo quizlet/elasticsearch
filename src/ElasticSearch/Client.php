@@ -13,7 +13,6 @@ namespace ElasticSearch;
 
 class Client {
     const DEFAULT_PROTOCOL = 'http';
-    const DEFAULT_SERVER = '127.0.0.1:9200';
     const DEFAULT_INDEX = 'default-index';
     const DEFAULT_TYPE = 'default-type';
 
@@ -21,7 +20,7 @@ class Client {
 
     protected static $_defaults = array(
         'protocol' => Client::DEFAULT_PROTOCOL,
-        'servers' => Client::DEFAULT_SERVER,
+        'servers' => ['host' => '127.0.0.1', 'port' => '9200'],
         'index' => Client::DEFAULT_INDEX,
         'type' => Client::DEFAULT_TYPE
     );
@@ -273,7 +272,7 @@ class Client {
     protected static function parseDsn($dsn) {
         $parts = parse_url($dsn);
         $protocol = $parts['scheme'];
-        $servers = $parts['host'] . ':' . $parts['port'];
+        $servers = ['host' => $parts['host'], 'port' => $parts['port']];
         if (isset($parts['path'])) {
             $path = explode('/', $parts['path']);
             list($index, $type) = array_values(array_filter($path));
