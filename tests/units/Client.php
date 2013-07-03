@@ -15,7 +15,7 @@ class Client extends \ElasticSearch\tests\Base
         $search = \ElasticSearch\Client::connection('http://test.com:9100/index/type');
         $config = array(
             'protocol' => 'http',
-            'servers' => 'test.com:9100',
+            'servers' => ['host' => 'test.com', 'port' => 9100],
             'index' => 'index',
             'type' => 'type'
         );
@@ -167,7 +167,7 @@ class Client extends \ElasticSearch\tests\Base
      * @expectedException ElasticSearch\Transport\HTTPException
      */
     public function testSearchThrowExceptionWhenServerDown() {
-        $client = \ElasticSearch\Client::connection();
+        $client = \ElasticSearch\Client::connection(array('servers' => ['host' => 'localhost', 'port' => 1200]));
 
         $this->assert->exception(function()use($client) {
                 $client->search("title:cool");
