@@ -194,7 +194,7 @@ class HTTP extends Base {
                     break;
                 case CURLE_COULDNT_CONNECT:
                     $retry = true;
-                    $error = "Couldnt connect to host [{$this->host}], ElasticSearch down?";
+                    $error = "Couldnt connect to host [{$this->getActiveConnection()['host']}], ElasticSearch down?";
                     break;
                 case CURLE_OPERATION_TIMEDOUT:
                     $retry = true;
