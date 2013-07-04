@@ -164,6 +164,34 @@ class Client extends \ElasticSearch\tests\Base
     }
 
     /**
+     * Test multi search
+     */
+    public function testMultiSearch() {
+        $client = \ElasticSearch\Client::connection();
+        $tag = $this->getTag();
+
+        $primaryIndex = 'test-index3';
+        $secondaryIndex = 'test-index4';
+        $doc = array('title' => $tag);
+        $options = array('refresh' => true);
+        $client->setIndex($primaryIndex)->index($doc, false, $options);
+        $client->setIndex($secondaryIndex)->setType("type2")->index($doc, false, $options);
+
+        $client->queueSearch(["query" => ["query_string" => ["query" => $tag]]], $primaryIndex);
+        $client->queueSearch(["query" => ["query_string" => ["query" => $tag]]], $secondaryIndex, "type2");
+
+        $resp = $client->multiSearch();
+
+        $this->assert->array($resp)->hasKey('responses')->array($resp['responses'][0])
+            ->hasKey('hits')->integer($resp['responses'][0]['hits']['total'])->isEqualTo(1)
+            ->array($resp['responses'])->hasKey(1)
+            ->array($resp['responses'][1])->hasKey('hits')
+            ->integer($resp['responses'][1]['hits']['total'])->isEqualTo(1);
+
+        $client->delete();
+    }
+
+    /**
      * @expectedException ElasticSearch\Transport\HTTPException
      */
     public function testSearchThrowExceptionWhenServerDown() {

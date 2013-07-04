@@ -30,7 +30,7 @@ class Client {
         'memcached' => 'ElasticSearch\\Transport\\Memcached',
     );
 
-    private $transport, $index, $type;
+    private $transport, $index, $type, $searches = array();
 
     /**
      * Construct search client
@@ -244,6 +244,29 @@ class Client {
      */
     public function refresh() {
         return $this->request('_refresh', "POST");
+    }
+
+    /**
+     * Queue a search to be excuted as part of a multisearch.
+     *
+     *
+     * @param array $query DSL query represented as an array
+     * @param string $index Optional
+     * @param string $type Optional
+     */
+    public function queueSearch($query, $index = null, $type = null) {
+        $this->searches[] = array($query, $index, $type);
+        return $this;
+    }
+
+    /**
+     * Execute all queued searches as a multi search.
+     */
+    public function multiSearch(array $options = array()) {
+        $start = microtime(true);
+        $result = $this->transport->multiSearch($this->searches, $options);
+        $result['time'] = microtime(true) - $start;
+        return $result;
     }
 
     /**

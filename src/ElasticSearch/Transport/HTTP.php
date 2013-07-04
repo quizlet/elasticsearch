@@ -78,7 +78,35 @@ class HTTP extends Base {
     }
 
     /**
-     * Search
+     * Multi search
+     * 
+     * @return array
+     * @param array $searches
+     */
+    public function multiSearch($searches) {
+        $url = $this->buildUrl('/_msearch');
+        $request = array();
+        foreach ($searches as $search) {
+            $header = array();
+            list($query, $index, $type) = $search;
+            if ($index !== null) {
+                $header['index'] = $index;
+            }
+            if ($type !== null) {
+                $header['type'] = $type;
+            }
+            $request[] = json_encode($header);
+            $request[] = json_encode($query);
+        }
+        $request = implode("\n", $request);
+        $request .= "\n";
+        var_dump($request);
+        $result = $this->call($url, "GET", $request);
+        return $result;
+    }
+
+    /**
+     * Delete
      *
      * @return array
      * @param mixed $query
