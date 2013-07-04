@@ -266,6 +266,7 @@ class Client {
         $start = microtime(true);
         $result = $this->transport->multiSearch($this->searches, $options);
         $result['time'] = microtime(true) - $start;
+        $this->searches = array();
         return $result;
     }
 
