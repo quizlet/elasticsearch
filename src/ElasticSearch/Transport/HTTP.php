@@ -100,7 +100,7 @@ class HTTP extends Base {
         }
         $request = implode("\n", $request);
         $request .= "\n";
-        var_dump($request);
+        //var_dump($request);
         $result = $this->call($url, "GET", $request);
         return $result;
     }
