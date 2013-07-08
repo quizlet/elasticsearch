@@ -264,11 +264,36 @@ class Client {
      */
     public function multiSearch(array $options = array()) {
         $start = microtime(true);
-        $result = $this->transport->multiSearch($this->searches, $options);
+        $request = $this->buildMultiSearchRequest();
+        $result = $this->transport->multiSearch($request, $options);
         $result['time'] = microtime(true) - $start;
+        $result['request'] = $request;
         $this->searches = array();
         return $result;
     }
+
+    /**
+     * Multi search request builder
+     */
+    private function buildMultiSearchRequest() {
+        $request = array();
+        foreach ($this->searches as $search) {
+            $header = array();
+            list($query, $index, $type) = $search;
+            if ($index !== null) {
+                $header['index'] = $index;
+            }
+            if ($type !== null) {
+                $header['type'] = $type;
+            }
+            $request[] = json_encode($header);
+            $request[] = json_encode($query);
+        }
+        $request = implode("\n", $request);
+        $request .= "\n";
+        return $request;
+    }
+
 
     /**
      * Expand a given path (array or string)
