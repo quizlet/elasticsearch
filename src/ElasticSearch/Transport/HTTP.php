@@ -216,6 +216,7 @@ class HTTP extends Base {
                         if ($retry_count < 3) {
                             $retry_count++;
                             $i--;
+                            usleep(1000000);
                         } else {
                             $retry_count = 0;
                         }
