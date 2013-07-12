@@ -160,76 +160,78 @@ class HTTP extends Base {
     protected function call($url, $method="GET", $payload=false) {
         $conn = $this->ch;
         $protocol = "http";
-        $requestURL = $protocol . "://" . $this->getActiveConnectionString() . $url;
-        curl_setopt($conn, CURLOPT_URL, $requestURL);
-        curl_setopt($conn, CURLOPT_TIMEOUT, self::TIMEOUT);
-        curl_setopt($conn, CURLOPT_PORT, $this->getActiveConnection()['port']);
-        curl_setopt($conn, CURLOPT_RETURNTRANSFER, 1) ;
-        curl_setopt($conn, CURLOPT_CUSTOMREQUEST, strtoupper($method));
-        curl_setopt($conn, CURLOPT_FORBID_REUSE , 0) ;
 
-        if ((is_array($payload) && count($payload) > 0) || is_string($payload) && $payload !== "")
-            curl_setopt($conn, CURLOPT_POSTFIELDS, is_string($payload) ? $payload : json_encode($payload));
-        else
-        	  curl_setopt($conn, CURLOPT_POSTFIELDS, null);
+        $connections = $this->connections;
+        shuffle($connections);
+        $n = count($connections);
+        $retry_count = 0;
+        for ($i = 0; $i < $n; $i++) {
+            $connection = $connections[$i];
+            $requestURL = $protocol . "://" . $connection['host'] . ':' . $connection['port'] . $url;
+            curl_setopt($conn, CURLOPT_URL, $requestURL);
+            curl_setopt($conn, CURLOPT_TIMEOUT, self::TIMEOUT);
+            curl_setopt($conn, CURLOPT_PORT, $connection['port']);
+            curl_setopt($conn, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($conn, CURLOPT_CUSTOMREQUEST, strtoupper($method));
+            curl_setopt($conn, CURLOPT_FORBID_REUSE, 0);
 
-        $response = curl_exec($conn);
-        if ($response !== false) {
-            $data = json_decode($response, true);
-            if (!$data) {
-                $data = array('error' => $response, "code" => curl_getinfo($conn, CURLINFO_HTTP_CODE));
+            if ((is_array($payload) && count($payload) > 0) || is_string($payload) && $payload !== "")
+                curl_setopt($conn, CURLOPT_POSTFIELDS, is_string($payload) ? $payload : json_encode($payload));
+            else
+                curl_setopt($conn, CURLOPT_POSTFIELDS, null);
+
+            $response = curl_exec($conn);
+            if ($response !== false) {
+                $data = json_decode($response, true);
+                if (!$data) {
+                    $data = array('error' => $response, "code" => curl_getinfo($conn, CURLINFO_HTTP_CODE));
+                }
+                return $data;
+            }
+            else {
+                $errno = curl_errno($conn);
+                switch ($errno)
+                {
+                    case CURLE_UNSUPPORTED_PROTOCOL:
+                        $error = "Unsupported protocol [$protocol]";
+                        break;
+                    case CURLE_FAILED_INIT:
+                        $error = "Internal cUrl error?";
+                        break;
+                    case CURLE_URL_MALFORMAT:
+                        $error = "Malformed URL [$requestURL] -d " . json_encode($payload);
+                        break;
+                    case CURLE_COULDNT_RESOLVE_PROXY:
+                        $error = "Couldnt resolve proxy";
+                        break;
+                    case CURLE_COULDNT_RESOLVE_HOST:
+                        $error = "Couldnt resolve host";
+                        break;
+                    case CURLE_COULDNT_CONNECT:
+                        $retry = true;
+                        $error = "Couldnt connect to host [{$connection['host']}], ElasticSearch down?";
+                        break;
+                    case CURLE_OPERATION_TIMEDOUT:
+                        $error = "Operation timed out on [$requestURL]";
+                        if ($retry_count < 3) {
+                            $retry_count++;
+                            $i--;
+                        } else {
+                            $retry_count = 0;
+                        }
+                        break;
+                    default:
+                        $error = "Unknown error";
+                        if ($errno == 0)
+                            $error .= ". Non-cUrl error";
+                        break;
+                }
             }
         }
-        else {
-            /**
-             * cUrl error code reference can be found here:
-             * http://curl.haxx.se/libcurl/c/libcurl-errors.html
-             */
-            $retry = false;
-            $errno = curl_errno($conn);
-            switch ($errno)
-            {
-                case CURLE_UNSUPPORTED_PROTOCOL:
-                    $error = "Unsupported protocol [$protocol]";
-                    break;
-                case CURLE_FAILED_INIT:
-                    $error = "Internal cUrl error?";
-                    break;
-                case CURLE_URL_MALFORMAT:
-                    $error = "Malformed URL [$requestURL] -d " . json_encode($payload);
-                    break;
-                case CURLE_COULDNT_RESOLVE_PROXY:
-                    $error = "Couldnt resolve proxy";
-                    break;
-                case CURLE_COULDNT_RESOLVE_HOST:
-                    $error = "Couldnt resolve host";
-                    break;
-                case CURLE_COULDNT_CONNECT:
-                    $retry = true;
-                    $error = "Couldnt connect to host [{$this->getActiveConnection()['host']}], ElasticSearch down?";
-                    break;
-                case CURLE_OPERATION_TIMEDOUT:
-                    $retry = true;
-                    $error = "Operation timed out on [$requestURL]";
-                    break;
-                default:
-                    $error = "Unknown error";
-                    if ($errno == 0)
-                        $error .= ". Non-cUrl error";
-                    break;
-            }
-            if ($retry && $this->atleastConnectionsAvailable(2)) {
-                $this->rolloverActiveConnection();
-                return $this->call($url, $method, $payload);
-            } else {
-                $exception = new HTTPException($error);
-                $exception->payload = $payload;
-                $exception->protocol = $protocol;
-                $exception->method = $method;
-                throw $exception;
-            }
-        }
-
-        return $data;
+        $exception = new HTTPException($error);
+        $exception->payload = $payload;
+        $exception->protocol = $protocol;
+        $exception->method = $method;
+        throw $exception;
     }
 }

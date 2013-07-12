@@ -46,45 +46,7 @@ abstract class Base {
             $connections = [$connections];
         }
         $this->connections = $connections;
-        $this->selectActiveConnection();
     }
-
-    /**
-     * Selects a connection from the list of available connections to be the active connection
-     */
-    public function selectActiveConnection() {
-        $this->activeConnection = rand(0, count($this->connections)-1);
-    }
-
-    /**
-     * Returns the host and port of the active connection
-     */
-    public function getActiveConnection() {
-        return $this->connections[$this->activeConnection];
-    }
-
-    /**
-     * Returns a formatted string for the active connection that can be used in URL generation for cURL requests
-     */
-    public function getActiveConnectionString() {
-        return $this->connections[$this->activeConnection]['host'].":".$this->connections[$this->activeConnection]['port'];
-    }
-
-    /**
-     * Removes the active connection and selects a new connection
-     */
-    public function rolloverActiveConnection() {
-        unset($this->connections[$this->activeConnection]);
-        $this->selectActiveConnection();
-    }
-
-    /**
-     * Checks to see if there are atleast x connections available
-     */
-    public function atleastConnectionsAvailable($neededConnections=1) {
-        return (count($this->connections) >= $neededConnections);
-    }
-
 
     /**
      * Method for indexing a new document
