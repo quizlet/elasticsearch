@@ -61,11 +61,13 @@ class Bulk {
      * @param string $type The default type
      * @param int $chunksize
      */
-    public function __construct($transport, $index, $type, $chunksize=0) {
+    public function __construct($transport, $index, $type, $chunksize=0, $mirror=false, $mirror_suffix='_mirror') {
         $this->transport = $transport;
         $this->index = $index;
         $this->type = $type;
         $this->chunksize = $chunksize;
+        $this->mirror = $mirror;
+        $this->mirror_suffix = $mirror_suffix;
     }
 
     /**
@@ -112,7 +114,12 @@ class Bulk {
 
         $ret = [];
         foreach (array_chunk($this->chunks, $chunksize) as $chunks)
+            $this->transport->setIndex($this->index);
             $ret += $this->transport->request('/_bulk', 'POST', join("\n", $chunks) . "\n");
+            if ($this->mirror) {
+                $this->transport->setIndex($this->index . $this->mirror_suffix);
+                $this->transport->request('/_bulk', 'POST', join("\n", $chunks) . "\n");
+            }
 
         return $ret;
     }

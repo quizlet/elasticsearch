@@ -28,10 +28,15 @@ class HTTP extends Base {
      */
     protected $ch;
 
+    private $mirror;
+    private $mirror_suffix;
 
-    public function __construct($connections) {
+
+    public function __construct($connections, $mirror, $mirror_suffix) {
         parent::__construct($connections);
         $this->ch = curl_init();
+        $this->mirror = $mirror;
+        $this->mirror_suffix = $mirror_suffix;
     }
 
     /**
@@ -45,6 +50,15 @@ class HTTP extends Base {
     public function index($document, $id=false, array $options = array()) {
         $url = $this->buildUrl(array($this->type, $id), $options);
         $method = ($id == false) ? "POST" : "PUT";
+        if ($this->mirror) {
+            $first = $this->call($url, $method, $document);
+            $index = $this->getIndex();
+            $this->setIndex($index . $this->mirror_suffix);
+            $url = $this->buildUrl(array($this->type, $id), $options);
+            $second = $this->call($url, $method, $document);
+            $this->setIndex($index);
+            return $first && $second;
+        }
         return $this->call($url, $method, $document);
     }
 
@@ -142,10 +156,27 @@ class HTTP extends Base {
      * @param array $options Parameters to pass to delete action
      */
     public function delete($id=false, array $options = array()) {
-        if ($id)
+        if ($id) {
+            if ($this->mirror) {
+                $first = $this->request(array($this->type, $id), "DELETE");
+                $index = $this->getIndex();
+                $this->setIndex($index . $this->mirror_suffix);
+                $second = $this->request(array($this->type, $id), "DELETE");
+                $this->setIndex($index);
+                return $first && $second;
+            }
             return $this->request(array($this->type, $id), "DELETE");
-        else
+        } else {
+            if ($this->mirror) {
+                $first = $this->request(false, "DELETE");
+                $index = $this->getIndex();
+                $this->setIndex($index . $this->mirror_suffix);
+                $second = $this->request(false, "DELETE");
+                $this->setIndex($index);
+                return $first && $second;
+            }
             return $this->request(false, "DELETE");
+        }
     }
 
     /**

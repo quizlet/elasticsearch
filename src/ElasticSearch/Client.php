@@ -15,6 +15,8 @@ class Client {
     const DEFAULT_PROTOCOL = 'http';
     const DEFAULT_INDEX = 'default-index';
     const DEFAULT_TYPE = 'default-type';
+    const DEFAULT_MIRROR_INDEXING = 'false';
+    const DEFAULT_MIRROR_INDEXING_SUFFIX = '_mirror';
 
     protected $_config = array();
 
@@ -22,7 +24,9 @@ class Client {
         'protocol' => Client::DEFAULT_PROTOCOL,
         'servers' => ['host' => '127.0.0.1', 'port' => '9200'],
         'index' => Client::DEFAULT_INDEX,
-        'type' => Client::DEFAULT_TYPE
+        'type' => Client::DEFAULT_TYPE,
+        'mirror_indexing' => Client::DEFAULT_MIRROR_INDEXING,
+        'mirror_indexing_suffix' => Client::DEFAULT_MIRROR_INDEXING_SUFFIX
     );
 
     protected static $_protocols = array(
@@ -72,8 +76,7 @@ class Client {
             throw new \Exception("Tried to use unknown protocol: $protocol");
         }
         $class = self::$_protocols[$protocol];
-
-        $transport = new $class($config['servers']);
+        $transport = new $class($config['servers'], $config['mirror_indexing'], $config['mirror_indexing_suffix']);
         $client = new self($transport, $config['index'], $config['type']);
         $client->config($config);
         return $client;
@@ -155,7 +158,7 @@ class Client {
      * @param int $chunksize the batch size when commiting
      */
     public function bulk($chunksize=0) {
-        return new \ElasticSearch\Bulk($this->transport, $this->index, $this->type, $chunksize);
+        return new \ElasticSearch\Bulk($this->transport, $this->index, $this->type, $chunksize, $this->_config['mirror_indexing'], $this->_config['mirror_indexing_suffix']);
     }
 
     protected function passesTypeConstraint($constraint) {

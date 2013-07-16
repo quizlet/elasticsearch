@@ -100,6 +100,10 @@ abstract class Base {
         $this->index = $index;
     }
 
+    public function getIndex() {
+        return $this->index;
+    }
+
     /**
      * Set what document types to act against
      * @param string $type
