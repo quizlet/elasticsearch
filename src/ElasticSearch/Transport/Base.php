@@ -120,7 +120,11 @@ abstract class Base {
      * @param array $options Query parameter options to pass
      */
     protected function buildUrl($path = false, array $options = array()) {
-        $isAbsolute = (is_array($path) ? $path[0][0] : $path[0]) === '/';
+        if (is_array($path) && isset($path[0][0])) {
+            $isAbsolute = ($path[0][0] === '/');
+        } else {
+            $isAbsolute = ($path[0] === '/');
+        }
         $url = $isAbsolute && is_string($path) ? $path : "/" . $this->index;
         if ($path && is_array($path) && count($path) > 0)
             $url .= "/" . implode("/", array_filter($path));
