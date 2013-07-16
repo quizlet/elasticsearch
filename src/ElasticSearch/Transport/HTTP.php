@@ -251,7 +251,7 @@ class HTTP extends Base {
                         } else {
                             $retry_count = 0;
                         }
-                        break;
+                        continue;
                     default:
                         $error = "Unknown error";
                         if ($errno == 0)
