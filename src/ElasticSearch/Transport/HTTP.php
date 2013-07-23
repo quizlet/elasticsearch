@@ -16,12 +16,6 @@ if (!defined('CURLE_OPERATION_TIMEDOUT'))
 
 
 class HTTP extends Base {
-
-    /**
-     * How long before timing out CURL call
-     */
-    const TIMEOUT = 5;
-
     /**
      * curl handler which is needed for reusing existing http connection to the server
      * @var resource
@@ -200,7 +194,8 @@ class HTTP extends Base {
             $connection = $connections[$i];
             $requestURL = $protocol . "://" . $connection['host'] . ':' . $connection['port'] . $url;
             curl_setopt($conn, CURLOPT_URL, $requestURL);
-            curl_setopt($conn, CURLOPT_TIMEOUT, self::TIMEOUT);
+            curl_setopt($conn, CURLOPT_CONNECTTIMEOUT_MS, 50);
+            curl_setopt($conn, CURLOPT_TIMEOUT_MS, 3);
             curl_setopt($conn, CURLOPT_PORT, $connection['port']);
             curl_setopt($conn, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($conn, CURLOPT_CUSTOMREQUEST, strtoupper($method));
