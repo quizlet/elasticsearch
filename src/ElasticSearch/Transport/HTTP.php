@@ -35,6 +35,7 @@ class HTTP extends Base {
 
     public function setTimeOut($timeout) {
         $this->timeout = $timeout;
+        return $this;
     }
 
     /**
