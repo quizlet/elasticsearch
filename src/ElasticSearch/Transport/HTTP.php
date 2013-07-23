@@ -195,7 +195,7 @@ class HTTP extends Base {
             $requestURL = $protocol . "://" . $connection['host'] . ':' . $connection['port'] . $url;
             curl_setopt($conn, CURLOPT_URL, $requestURL);
             curl_setopt($conn, CURLOPT_CONNECTTIMEOUT_MS, 50);
-            curl_setopt($conn, CURLOPT_TIMEOUT_MS, 3);
+            curl_setopt($conn, CURLOPT_TIMEOUT, 3);
             curl_setopt($conn, CURLOPT_PORT, $connection['port']);
             curl_setopt($conn, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($conn, CURLOPT_CUSTOMREQUEST, strtoupper($method));
