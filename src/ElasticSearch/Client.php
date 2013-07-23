@@ -49,6 +49,10 @@ class Client {
         $this->setIndex($index)->setType($type);
     }
 
+    public function setTimeOut($timeout) {
+        $this->transport->setTimeOut($timeout);
+    }
+
     /**
      * Get a client instance
      * Defaults to opening a http transport connection to 127.0.0.1:9200

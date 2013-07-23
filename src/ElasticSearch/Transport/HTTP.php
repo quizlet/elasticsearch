@@ -24,13 +24,17 @@ class HTTP extends Base {
 
     private $mirror;
     private $mirror_suffix;
-
+    private $timeout = 3000;
 
     public function __construct($connections, $mirror, $mirror_suffix) {
         parent::__construct($connections);
         $this->ch = curl_init();
         $this->mirror = $mirror;
         $this->mirror_suffix = $mirror_suffix;
+    }
+
+    public function setTimeOut($timeout) {
+        $this->timeout = $timeout;
     }
 
     /**
@@ -195,7 +199,7 @@ class HTTP extends Base {
             $requestURL = $protocol . "://" . $connection['host'] . ':' . $connection['port'] . $url;
             curl_setopt($conn, CURLOPT_URL, $requestURL);
             // curl_setopt($conn, CURLOPT_CONNECTTIMEOUT_MS, 50);
-            curl_setopt($conn, CURLOPT_TIMEOUT, 3);
+            curl_setopt($conn, CURLOPT_TIMEOUT_MS, $this->timeout);
             curl_setopt($conn, CURLOPT_PORT, $connection['port']);
             curl_setopt($conn, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($conn, CURLOPT_CUSTOMREQUEST, strtoupper($method));
