@@ -51,6 +51,7 @@ class Client {
 
     public function setTimeOut($timeout) {
         $this->transport->setTimeOut($timeout);
+        return $this;
     }
 
     /**
