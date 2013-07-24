@@ -52,9 +52,14 @@ class HTTP extends Base {
         if ($this->mirror) {
             $first = $this->call($url, $method, $document);
             $index = $this->getIndex();
-            $this->setIndex($index . $this->mirror_suffix);
-            $url = $this->buildUrl(array($this->type, $id), $options);
-            $second = $this->call($url, $method, $document);
+            try {
+                $this->setIndex($index . $this->mirror_suffix);
+                $url = $this->buildUrl(array($this->type, $id), $options);
+                $second = $this->call($url, $method, $document);
+            } catch (Exception $e) {
+                $this->setIndex($index);
+                throw $e;
+            }
             $this->setIndex($index);
             return $first && $second;
         }
