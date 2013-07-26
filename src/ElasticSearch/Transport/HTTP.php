@@ -24,7 +24,7 @@ class HTTP extends Base {
 
     private $mirror;
     private $mirror_suffix;
-    private $timeout = 3000;
+    private $timeout = 6000;
 
     public function __construct($connections, $mirror, $mirror_suffix) {
         parent::__construct($connections);
