@@ -49,8 +49,8 @@ class Client {
         $this->setIndex($index)->setType($type);
     }
 
-    public function setTimeOut($timeout) {
-        $this->transport->setTimeOut($timeout);
+    public function setTimeOutSeconds($timeout) {
+        $this->transport->setTimeOutMilliseconds($timeout*1000);
         return $this;
     }
 

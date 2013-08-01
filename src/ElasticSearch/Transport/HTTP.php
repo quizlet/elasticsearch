@@ -24,7 +24,7 @@ class HTTP extends Base {
 
     private $mirror;
     private $mirror_suffix;
-    private $timeout = 6000;
+    private $timeout = 6000; // milliseconds
 
     public function __construct($connections, $mirror, $mirror_suffix) {
         parent::__construct($connections);
@@ -33,7 +33,7 @@ class HTTP extends Base {
         $this->mirror_suffix = $mirror_suffix;
     }
 
-    public function setTimeOut($timeout) {
+    public function setTimeOutMilliseconds($timeout) {
         $this->timeout = $timeout;
         return $this;
     }
