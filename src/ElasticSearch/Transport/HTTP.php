@@ -165,8 +165,12 @@ class HTTP extends Base {
                 $first = $this->request(array($this->type, $id), "DELETE");
                 $index = $this->getIndex();
                 $this->setIndex($index . $this->mirror_suffix);
-                $second = $this->request(array($this->type, $id), "DELETE");
-                $this->setIndex($index);
+                try {
+                    $second = $this->request(array($this->type, $id), "DELETE");
+                } catch (Exception $e) {
+                    $this->setIndex($index);
+                    throw $e;
+                }
                 return $first && $second;
             }
             return $this->request(array($this->type, $id), "DELETE");
@@ -174,8 +178,13 @@ class HTTP extends Base {
             if ($this->mirror) {
                 $first = $this->request(false, "DELETE");
                 $index = $this->getIndex();
-                $this->setIndex($index . $this->mirror_suffix);
-                $second = $this->request(false, "DELETE");
+                try {
+                    $this->setIndex($index . $this->mirror_suffix);
+                    $second = $this->request(false, "DELETE");
+                } catch (Exception $e) {
+                    $this->setIndex($index);
+                    throw $e;
+                }
                 $this->setIndex($index);
                 return $first && $second;
             }
