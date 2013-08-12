@@ -257,14 +257,7 @@ class HTTP extends Base {
                         break;
                     case CURLE_OPERATION_TIMEDOUT:
                         $error = "Operation timed out on [$requestURL]";
-                        if ($retry_count < 3) {
-                            $retry_count++;
-                            $i--;
-                            usleep(100000);
-                        } else {
-                            $retry_count = 0;
-                        }
-                        continue;
+                        break; // Later we'll retry other servers again
                     default:
                         $error = "Unknown error";
                         if ($errno == 0)
