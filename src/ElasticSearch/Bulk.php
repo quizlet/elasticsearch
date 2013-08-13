@@ -123,7 +123,9 @@ class Bulk {
                     $this->transport->request('/_bulk', 'POST', join("\n", $chunks) . "\n");
                 } catch(Exception $e) {
                     $this->transport->setIndex($index);
+                    throw $e;
                 }
+                $this->transport->setIndex($index);
             }
         }
 
