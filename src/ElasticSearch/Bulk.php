@@ -113,12 +113,17 @@ class Bulk {
         $chunksize = $this->chunksize? $this->chunksize: count($this->chunks);
 
         $ret = [];
+        $index = $this->index;
         foreach (array_chunk($this->chunks, $chunksize) as $chunks) {
-            $this->transport->setIndex($this->index);
+            $this->transport->setIndex($index);
             $ret += $this->transport->request('/_bulk', 'POST', join("\n", $chunks) . "\n");
             if ($this->mirror) {
-                $this->transport->setIndex($this->index . $this->mirror_suffix);
-                $this->transport->request('/_bulk', 'POST', join("\n", $chunks) . "\n");
+                $this->transport->setIndex($index . $this->mirror_suffix);
+                try {
+                    $this->transport->request('/_bulk', 'POST', join("\n", $chunks) . "\n");
+                } catch(Exception $e) {
+                    $this->transport->setIndex($index);
+                }
             }
         }
 
