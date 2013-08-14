@@ -110,6 +110,7 @@ class Bulk {
      * @param array $options Not used atm
      */
     public function commit($options = array()) {
+        if (!$this->chunks) return;
         $chunksize = $this->chunksize? $this->chunksize: count($this->chunks);
 
         $ret = [];
