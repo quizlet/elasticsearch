@@ -15,7 +15,7 @@ class Client {
     const DEFAULT_PROTOCOL = 'http';
     const DEFAULT_INDEX = 'default-index';
     const DEFAULT_TYPE = 'default-type';
-    const DEFAULT_MIRROR_INDEXING = 'false';
+    const DEFAULT_MIRROR_INDEXING = false;
     const DEFAULT_MIRROR_INDEXING_SUFFIX = '_mirror';
 
     protected $_config = array();
