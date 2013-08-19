@@ -101,8 +101,8 @@ class HTTP extends Base {
      * @return array
      * @param array $searches
      */
-    public function multiSearch($request) {
-        $url = $this->buildUrl('/_msearch');
+    public function multiSearch($request, $options) {
+        $url = $this->buildUrl('/_msearch', $options);
         $result = $this->call($url, "GET", $request);
         return $result;
     }
