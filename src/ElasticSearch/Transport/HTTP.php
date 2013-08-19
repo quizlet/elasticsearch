@@ -80,16 +80,17 @@ class HTTP extends Base {
              */
             $url = $this->buildUrl(array(
                 $this->type, "_search"
-            ));
+            ), $options);
             $result = $this->call($url, "GET", $query);
         }
         elseif (is_string($query)) {
             /**
              * String based search means http query string search
              */
+            $options['q'] = $query;
             $url = $this->buildUrl(array(
-                $this->type, "_search?q=" . $query
-            ));
+                $this->type, "_search"
+            ), $options);
             $result = $this->call($url, "POST", $options);
         }
         return $result;
