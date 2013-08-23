@@ -147,6 +147,11 @@ class Bulk {
             $str .= "\n".json_encode($payload);
         return $str;
     }
+
+    public function setTimeOutSeconds($timeout) {
+        $this->transport->setTimeOutMilliseconds($timeout*1000);
+        return $this;
+    }
 }
 
 ?>
