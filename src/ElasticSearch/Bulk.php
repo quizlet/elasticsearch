@@ -89,6 +89,19 @@ class Bulk {
         $this->chunks[] = $this->encode_operation(self::INDEX, $meta, $doc);
     }
 
+    public function create($doc, $meta = array(), $options = array()) {
+        if (!is_array($meta))
+            $meta = array("_id" => $meta);
+
+        if (!isset($meta["_index"]))
+            $meta['_index'] = $this->index;
+        if (!isset($meta["_type"]))
+            $meta['_type'] = $this->type;
+
+        $this->chunks[] = $this->encode_operation('create', $meta, $doc);
+    }
+
+
     /**
      * delete items from index according to given specification.
      * nb: contrary to deleteByQuery, this does not accept a query string
