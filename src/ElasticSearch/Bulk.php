@@ -140,10 +140,10 @@ class Bulk {
      * @return string the encoded string
      */
     protected function encode_operation($type, $metadata, $payload=false) {
-        $str = json_encode(array($type => $metadata));
+        $str = json_encode(array($type => $metadata), JSON_UNESCAPED_UNICODE);
 
         if ($payload)
-            $str .= "\n".json_encode($payload);
+            $str .= "\n".json_encode($payload, JSON_UNESCAPED_UNICODE);
         return $str;
     }
 
