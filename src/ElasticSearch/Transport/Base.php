@@ -127,7 +127,7 @@ abstract class Base {
         }
         $url = $isAbsolute && is_string($path) ? $path : "/" . $this->index;
         if ($path && is_array($path) && count($path) > 0)
-            $url .= "/" . implode("/", array_filter($path));
+            $url .= "/" . implode("/", array_filter($path, function ($value) { return $value !== null; }));
         if (substr($url, -1) == "/")
             $url = substr($url, 0, -1);
         if (count($options) > 0)
