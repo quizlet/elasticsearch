@@ -208,10 +208,10 @@ class HTTP extends Base {
 
         $connections = $this->connections;
         shuffle($connections);
+        // TODO: Make retry count configurable
         $n = count($connections);
-        $retry_count = 0;
-        for ($i = 0; $i < $n; $i++) {
-            $connection = $connections[$i];
+        for ($retry_count = 0; $retry_count < $n; $retry_count++) {
+            $connection = $connections[$retry_count];
             $requestURL = $protocol . "://" . $connection['host'] . ':' . $connection['port'] . $url;
             curl_setopt($conn, CURLOPT_URL, $requestURL);
             curl_setopt($conn, CURLOPT_CONNECTTIMEOUT_MS, $this->timeout);
@@ -229,6 +229,7 @@ class HTTP extends Base {
             $response = curl_exec($conn);
             if ($response !== false) {
                 $data = json_decode($response, true);
+                $data['retries'] = $retry_count;
                 if (!$data) {
                     $data = array('error' => $response, "code" => curl_getinfo($conn, CURLINFO_HTTP_CODE));
                 }
