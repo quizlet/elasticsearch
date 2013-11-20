@@ -283,7 +283,7 @@ class Client {
     /**
      * Multi search request builder
      */
-    private function buildMultiSearchRequest() {
+    public function buildMultiSearchRequest() {
         $request = array();
         foreach ($this->searches as $search) {
             $header = array();
