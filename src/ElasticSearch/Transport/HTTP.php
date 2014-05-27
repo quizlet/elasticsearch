@@ -205,6 +205,7 @@ class HTTP extends Base {
     protected function call($url, $method="GET", $payload=false) {
         $conn = $this->ch;
         $protocol = "http";
+        $error = "";
 
         $connections = $this->connections;
         shuffle($connections);
