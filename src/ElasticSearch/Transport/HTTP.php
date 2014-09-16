@@ -253,7 +253,7 @@ class HTTP extends Base {
                         $error = "Couldnt resolve proxy";
                         break;
                     case CURLE_COULDNT_RESOLVE_HOST:
-                        $error = "Couldnt resolve host";
+                        $error = "Couldnt resolve host [$url] [$requestURL]";
                         break;
                     case CURLE_COULDNT_CONNECT:
                         $retry = true;
