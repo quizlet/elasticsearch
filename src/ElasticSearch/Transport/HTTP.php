@@ -230,10 +230,10 @@ class HTTP extends Base {
             $response = curl_exec($conn);
             if ($response !== false) {
                 $data = json_decode($response, true);
-                $data['retries'] = $retry_count;
                 if (!$data) {
                     $data = array('error' => $response, "code" => curl_getinfo($conn, CURLINFO_HTTP_CODE));
                 }
+                $data['retries'] = $retry_count;
                 return $data;
             }
             else {
