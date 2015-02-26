@@ -126,10 +126,19 @@ class Bulk {
         if (!$this->chunks) return;
         $chunksize = $this->chunksize? $this->chunksize: count($this->chunks);
 
-        $ret = [];
+        $ret = [
+            'errors' => FALSE,
+            'items' => [],
+        ];
+
         foreach (array_chunk($this->chunks, $chunksize) as $chunks) {
-            $ret += $this->transport->request('/_bulk', 'POST', join("\n", $chunks) . "\n");
+            $chunk_ret = $this->transport->request('/_bulk', 'POST', join("\n", $chunks) . "\n");
+            $ret['errors'] = $chunk_ret['errors'] ? true : $ret['errors'];
+            foreach($chunk_ret['items'] as $ret_item) {
+                $ret['items'][] = $ret_item;
+            }
         }
+
         $this->chunks = [];
         return $ret;
     }
