@@ -1,1 +1,1 @@
-./vendor/bin/atoum --ulr -d tests/units
+./vendor/composer/bin/atoum --ulr -d tests/units

@@ -23,7 +23,7 @@ ElasticSearch is a distributed lucene powered search indexing, this is a PHP cli
 
 ```php
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/composer/autoload.php';
 
 use \ElasticSearch\Client;
 // The recommended way to go about things is to use an environment variable called ELASTICSEARCH_URL

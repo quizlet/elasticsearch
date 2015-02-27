@@ -2,7 +2,7 @@
 
 namespace ElasticSearch\tests\units;
 
-require_once getcwd() . '/vendor/autoload.php';
+require_once getcwd() . '/vendor/composer/autoload.php';
 
 use \mageekguy\atoum;
 
