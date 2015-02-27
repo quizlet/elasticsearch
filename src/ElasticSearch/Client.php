@@ -163,7 +163,7 @@ class Client {
      * @param int $chunksize the batch size when commiting
      */
     public function bulk($chunksize=0) {
-        return new \ElasticSearch\Bulk($this->transport, $this->index, $this->type, $;, $this->_config['mirror_indexing'], $this->_config['mirror_indexing_suffix']);
+        return new \ElasticSearch\Bulk($this->transport, $this->index, $this->type, $chunksize, $this->_config['mirror_indexing'], $this->_config['mirror_indexing_suffix']);
     }
 
     protected function passesTypeConstraint($constraint) {
