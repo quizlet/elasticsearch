@@ -132,7 +132,7 @@ class Client {
      * @param bool $verbose
      */
     public function get($id, $verbose=false) {
-        return $this->request($id, "GET");
+        return $this->request($id, "GET", false, $verbose);
     }
 
     /**
