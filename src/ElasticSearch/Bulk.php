@@ -129,14 +129,19 @@ class Bulk {
         $ret = [
             'errors' => FALSE,
             'items' => [],
+            'took' => 0,
         ];
 
         foreach (array_chunk($this->chunks, $chunksize) as $chunks) {
             $chunkRet = $this->transport->request('/_bulk', 'POST', join("\n", $chunks) . "\n");
             $ret['errors'] = $chunkRet['errors'] ? true : $ret['errors'];
-            foreach($chunkRet['items'] as $retItem) {
-                $ret['items'][] = $retItem;
-            }
+            $ret['items'] = array_merge($ret['items'], $chunkRet['items']);
+
+            // Not clear what 'took' represents (it's undocumented) so 
+            // adding the values together for now until a more useful
+            // option presents itself.
+
+            $ret['took'] += $chunkRet['took'];
         }
 
         $this->chunks = [];
