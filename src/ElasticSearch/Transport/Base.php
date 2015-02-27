@@ -104,6 +104,10 @@ abstract class Base {
         return $this->index;
     }
 
+    public function getType() {
+        return $this->type;
+    }
+
     /**
      * Set what document types to act against
      * @param string $type
@@ -119,7 +123,7 @@ abstract class Base {
      * @param array|bool $path
      * @param array $options Query parameter options to pass
      */
-    protected function buildUrl($path = false, array $options = array()) {
+    public function buildUrl($path = false, array $options = array()) {
         if (is_array($path) && isset($path[0][0])) {
             $isAbsolute = ($path[0][0] === '/');
         } else {

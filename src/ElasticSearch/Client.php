@@ -54,6 +54,10 @@ class Client {
         return $this;
     }
 
+    public function getTransport() {
+        return $this->transport;
+    }
+
     /**
      * Get a client instance
      * Defaults to opening a http transport connection to 127.0.0.1:9200
