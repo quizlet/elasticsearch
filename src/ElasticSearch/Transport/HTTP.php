@@ -24,7 +24,8 @@ class HTTP extends Base {
 
     private $mirror;
     private $mirror_suffix;
-    private $timeout = 6000; // milliseconds
+    private $connectTimeoutMs = 500;
+    private $requestTimeoutMs = 6000;
 
     public function __construct($connections, $mirror, $mirror_suffix) {
         parent::__construct($connections);
@@ -33,8 +34,23 @@ class HTTP extends Base {
         $this->mirror_suffix = $mirror_suffix;
     }
 
-    public function setTimeOutMilliseconds($timeout) {
-        $this->timeout = $timeout;
+    /**
+    * Set the timeout for establishing a TCP connection to make a request. If the timeout
+    * elapses before the connection has been established, the next available elastic search 
+    * host will be tried or, if no more are available, an exception will be raised.
+    */
+    public function setConnectTimeoutMs($timeout) {
+        $this->connectTimeoutMs = $timeout;
+        return $this;
+    }
+
+    /**
+    * Set the timeout for an HTTP request to elastic search to complete. If the timeout
+    * elapses before a response is received, the next available elastic search 
+    * host will be tried or, if no more are available, an exception will be raised.
+    */
+    public function setRequestTimeoutMs($timeout) {
+        $this->requestTimeoutMs = $timeout;
         return $this;
     }
 
@@ -215,8 +231,8 @@ class HTTP extends Base {
             $connection = $connections[$retry_count];
             $requestURL = $protocol . "://" . $connection['host'] . ':' . $connection['port'] . $url;
             curl_setopt($conn, CURLOPT_URL, $requestURL);
-            curl_setopt($conn, CURLOPT_CONNECTTIMEOUT_MS, $this->timeout);
-            curl_setopt($conn, CURLOPT_TIMEOUT_MS, $this->timeout);
+            curl_setopt($conn, CURLOPT_CONNECTTIMEOUT_MS, $this->connectTimeoutMs);
+            curl_setopt($conn, CURLOPT_TIMEOUT_MS, $this->requestTimeoutMs);
             curl_setopt($conn, CURLOPT_PORT, $connection['port']);
             curl_setopt($conn, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($conn, CURLOPT_CUSTOMREQUEST, strtoupper($method));
