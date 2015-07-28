@@ -34,11 +34,21 @@ class HTTP extends Base {
         $this->mirror_suffix = $mirror_suffix;
     }
 
+    /**
+    * Set the timeout for establishing a TCP connection to make a request. If the timeout
+    * elapses before the connection has been established, the next available elastic search 
+    * host will be tried or, if no more are available, an exception will be raised.
+    */
     public function setConnectTimeoutMs($timeout) {
         $this->connectTimeoutMs = $timeout;
         return $this;
     }
 
+    /**
+    * Set the timeout for an HTTP request to elastic search to complete. If the timeout
+    * elapses before a response is received, the next available elastic search 
+    * host will be tried or, if no more are available, an exception will be raised.
+    */
     public function setRequestTimeoutMs($timeout) {
         $this->requestTimeoutMs = $timeout;
         return $this;
