@@ -161,9 +161,8 @@ class Bulk {
         return $str;
     }
 
-    public function setTimeOutSeconds($timeout) {
-        $this->transport->setTimeOutMilliseconds($timeout*1000);
-        return $this;
+    public function getTransport() {
+        return $this->transport;
     }
 }
 
