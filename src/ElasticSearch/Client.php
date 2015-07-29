@@ -294,7 +294,7 @@ class Client {
                 $header['type'] = $type;
             }
             if ($searchType !== null) {
-                $headers['search_type'] = $searchType;
+                $header['search_type'] = $searchType;
             }
             $request[] = json_encode($header);
             $request[] = json_encode($query);
