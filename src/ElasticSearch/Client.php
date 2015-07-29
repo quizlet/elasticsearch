@@ -261,8 +261,8 @@ class Client {
      * @param string $index Optional
      * @param string $type Optional
      */
-    public function queueSearch($query, $index = null, $type = null) {
-        $this->searches[] = array($query, $index, $type);
+    public function queueSearch($query, $index = null, $type = null, $searchType = null) {
+        $this->searches[] = array($query, $index, $type, $searchType);
         return $this;
     }
 
@@ -286,12 +286,15 @@ class Client {
         $request = array();
         foreach ($this->searches as $search) {
             $header = array();
-            list($query, $index, $type) = $search;
+            list($query, $index, $type, $searchType) = $search;
             if ($index !== null) {
                 $header['index'] = $index;
             }
             if ($type !== null) {
                 $header['type'] = $type;
+            }
+            if ($searchType !== null) {
+                $headers['search_type'] = $searchType;
             }
             $request[] = json_encode($header);
             $request[] = json_encode($query);
